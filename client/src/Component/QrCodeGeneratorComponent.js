@@ -49,6 +49,9 @@ let colors = [{
 function QrCodeGenerator() {
     const [fieldValues, setFieldValues] = useState({ ...qrCodeObj });
     const [platteColors, setPlatteColors] = useState([...colors]);
+    const [loader, setLoader] = useState(false);
+    const [alertMessageSuccess, setAlertMessageSuccess] = useState(null);
+    const [alertMessageError, setAlertMessageError] = useState(null);
     const [errors, setError] = useState({});
     // useEffect(() => {
 
@@ -79,52 +82,89 @@ function QrCodeGenerator() {
             qrText: false,
             qrEmail: false,
             qrColor: false,
-            message:false
+            message: false
         }
         if (qrText === '') {
             validatedObj.qrText = true;
-       }
-       if (qrEmail ===   '') {
-        validatedObj.qrEmail = true;
-    }
-    if (qrEmail !==   '' ) {
-        var pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/; 
-        if(!qrEmail.match(pattern)){
-            validatedObj.qrEmail = true;
-            validatedObj.message = 'Your Email is not Valid';
         }
-        
+        if (qrEmail === '') {
+            validatedObj.qrEmail = true;
+        }
+        if (qrEmail !== '') {
+            var pattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+            if (!qrEmail.match(pattern)) {
+                validatedObj.qrEmail = true;
+                validatedObj.message = 'Your Email is not Valid';
+            }
+
+        }
+        if (qrColor === '') {
+            validatedObj.qrColor = true;
+        }
+        return validatedObj;
+
     }
-    if (qrColor ===   '') {
-        validatedObj.qrColor = true;
-    }
-    return validatedObj;
+    const postQRCode = async (payload) => {
+        console.log('payload',payload)
+        setLoader(true)
+        await fetch('http://localhost:8000/qr-code-generate', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" },
+        })
+            .then(response => response.json())
+            .then(data => {
+                setLoader(false);
+            if(data && data.status===400){
+                setAlertMessageError(data.message);
+                setTimeout(()=>{
+                    setAlertMessageError(null);
+                }, 5000)  
+            }else{
+                setAlertMessageSuccess(data.message);
+                setTimeout(()=>{
+                    setAlertMessageSuccess(null);
+                }, 5000)
+                console.log(data)
+            }
+              
+            })
+            .catch(err => console.error(err));
 
     }
     const handleSubmit = () => {
-       
+
         let errorsObj = checkValidation(fieldValues);
-        let isErrorExist =  Object.keys(errorsObj).every((k) => errorsObj[k]===false)
-        console.log('errorsObj',errorsObj)
-        console.log('isErrorExist',isErrorExist)
-       if(isErrorExist === true){
-        setError({})
-        console.log('fieldValues', fieldValues)
-        
-       }
-       else{
-        setError({...errorsObj})
-        console.log('errors',errors)
-       }
+        let isErrorExist = Object.keys(errorsObj).every((k) => errorsObj[k] === false)
+
+        if (isErrorExist === true) {
+            setError({})
+            console.log('fieldValues', fieldValues)
+            postQRCode(fieldValues)
+
+        }
+        else {
+            setError({ ...errorsObj })
+
+        }
 
     }
     return (
         <div className="container">
+           {loader && (<div className="loader"></div>)}
+           {alertMessageSuccess && (<div className="alertSuccess">
+  <span  ></span> 
+  <strong>Success!</strong> {alertMessageSuccess}
+</div>)}
+{alertMessageError && (<div className="alertError">
+  <span  ></span> 
+  <strong>Error!</strong> {alertMessageError}
+</div>)}
             <h1>QR Code Email Sender</h1>
 
             <div className="row">
                 <div className="col-25">
-                    <label>Text you Want to make QR Code</label>
+                    <label className="required">Text you Want to make QR Code</label>
                 </div>
                 <div className="col-75">
                     <input
@@ -139,7 +179,7 @@ function QrCodeGenerator() {
             </div>
             <div className="row">
                 <div className="col-25">
-                    <label>Write Your Email adddress at which QR Code will be sent</label>
+                    <label className="required">Write Your Email adddress at which QR Code will be sent</label>
                 </div>
                 <div className="col-75">
                     <input
@@ -149,12 +189,12 @@ function QrCodeGenerator() {
                         value={fieldValues.qrEmail}
                         onChange={handleFieldChange}
                     />
-                    {errors && (errors.qrEmail && errors.message!==false ) ? (<span style={{ color: 'red' }}>{errors.message}</span>):errors.qrEmail ===true ? (<span style={{ color: 'red' }}>Field is required</span>):null }
+                    {errors && (errors.qrEmail && errors.message !== false) ? (<span style={{ color: 'red' }}>{errors.message}</span>) : errors.qrEmail === true ? (<span style={{ color: 'red' }}>Field is required</span>) : null}
                 </div>
             </div>
             <div className="row">
                 <div className="col-25">
-                    <label>Select Your QR /code Background Color</label>
+                    <label className="required">Select Your QR /code Background Color</label>
                 </div>
                 <div className="col-75">
                     {platteColors && platteColors.map((item, i) => {
