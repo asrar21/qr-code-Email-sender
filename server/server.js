@@ -47,7 +47,7 @@ async function create(dataForQRcode,color) {
   );
   return canvas.toDataURL("image/png");
 }
-app.post("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("hello world")
 })
 app.post("/qr-code-generate", async (req, res) => {
