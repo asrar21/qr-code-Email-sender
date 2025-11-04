@@ -107,7 +107,7 @@ function QrCodeGenerator() {
     const postQRCode = async (payload) => {
         console.log('payload',payload)
         setLoader(true)
-        await fetch(https://qr-code-backend-pi.vercel.app/qr-code-generate', {
+        await fetch('https://qr-code-backend-pi.vercel.app/qr-code-generate', {
             method: 'POST',
             body: JSON.stringify(payload),
             headers: { "Content-Type": "application/json" },
