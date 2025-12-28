@@ -8,9 +8,11 @@ const router = express.Router();
 
 // Signup validation
 const signupValidation = [
+  body('username').notEmpty().trim().escape(),
+  body('name').notEmpty().trim().escape(),
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
-  body('name').notEmpty().trim()
+  body('mobileNumber').notEmpty().trim(),
+  body('password').isLength({ min: 6 })
 ];
 
 // Login validation

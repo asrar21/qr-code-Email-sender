@@ -1,6 +1,10 @@
 // src/routes/qr.js
 const express = require('express');
-const { generateQR, getQRHistory } = require('../controllers/qrController');
+const { 
+  generateQR, 
+  downloadQR, 
+  getRemainingQRs 
+} = require('../controllers/qrController');
 const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
@@ -11,7 +15,10 @@ router.use(authenticate);
 // Generate QR code
 router.post('/generate', generateQR);
 
-// Get QR code history
-router.get('/history', getQRHistory);
+// Download QR code
+router.get('/download/:qrId', downloadQR);
+
+// Get remaining QR codes
+router.get('/remaining', getRemainingQRs);
 
 module.exports = router;

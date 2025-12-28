@@ -12,54 +12,73 @@ exports.getPlans = async (req, res) => {
         free: {
           tier: 'free',
           price: 0,
-          qrCodesLimit: 10,
-          features: ['Basic QR Generation', 'Standard Colors']
+          qrCodesLimit: 3,
+          features: ['Basic QR Generation', 'Standard Colors'],
+          description: 'Perfect for getting started'
         },
         basic: {
           tier: 'basic',
           price: 9.99,
           qrCodesLimit: 50,
-          features: ['Custom Colors', 'QR Analytics', 'Email Delivery']
+          features: ['Custom Colors', 'Basic Analytics', 'Email Delivery'],
+          description: 'For growing businesses'
         },
         premium: {
           tier: 'premium',
           price: 19.99,
           qrCodesLimit: 200,
-          features: ['All Basic Features', 'Priority Support', 'API Access']
+          features: ['All Basic Features', 'Priority Support', 'API Access', 'Custom Branding'],
+          description: 'For professionals & agencies'
         }
       };
       
       await db.set('subscriptions', defaultPlans);
-      return res.json({ success: true, plans: Object.values(defaultPlans) });
+      return res.json({ 
+        success: true, 
+        plans: Object.values(defaultPlans),
+        message: 'Default plans created'
+      });
     }
+    
+    // Convert object to array
+    const plansArray = Object.keys(plans).map(key => ({
+      id: key,
+      ...plans[key]
+    }));
     
     res.json({
       success: true,
-      plans: Object.values(plans)
+      plans: plansArray
     });
   } catch (error) {
     console.error('Get plans error:', error);
-    res.status(500).json({ error: 'Error fetching subscription plans' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Error fetching subscription plans' 
+    });
   }
 };
 
-// Subscribe to a plan
+// Subscribe to a plan (for testing - without payment)
 exports.subscribe = async (req, res) => {
   try {
     const { planId } = req.body;
     const userId = req.user.id;
 
-    // Get the selected plan
+    // Get all plans
     const plans = await db.get('subscriptions');
-    const plan = plans[planId];
-    
-    if (!plan) {
-      return res.status(404).json({ error: 'Plan not found' });
+    if (!plans || !plans[planId]) {
+      return res.status(404).json({ 
+        success: false,
+        error: 'Plan not found' 
+      });
     }
+
+    const plan = plans[planId];
 
     // Update user's subscription
     await db.update(`users/${userId}`, {
-      subscriptionTier: plan.tier,
+      subscriptionTier: planId,
       subscriptionActive: true,
       subscriptionSince: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -73,7 +92,13 @@ exports.subscribe = async (req, res) => {
       planTier: plan.tier,
       price: plan.price,
       subscribedAt: new Date().toISOString(),
-      status: 'active'
+      status: 'active',
+      paymentMethod: 'test_mode' // For testing
+    });
+
+    // Reset QR code count for new subscription
+    await db.update(`users/${userId}`, {
+      qrCodesGenerated: 0
     });
 
     res.json({
@@ -81,13 +106,22 @@ exports.subscribe = async (req, res) => {
       message: `Successfully subscribed to ${plan.tier} plan`,
       subscription: {
         tier: plan.tier,
+        price: plan.price,
         features: plan.features,
+        qrCodesLimit: plan.qrCodesLimit,
         subscribedAt: new Date().toISOString()
+      },
+      reset: {
+        qrCodesGenerated: 0,
+        message: 'Your QR code count has been reset'
       }
     });
   } catch (error) {
     console.error('Subscription error:', error);
-    res.status(500).json({ error: 'Error processing subscription' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Error processing subscription' 
+    });
   }
 };
 
@@ -96,20 +130,71 @@ exports.getMySubscription = async (req, res) => {
   try {
     const user = req.user;
     
+    // Get fresh user data
+    const userData = await db.get(`users/${user.id}`);
+    if (!userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
     // Get subscription plan details
     const plans = await db.get('subscriptions');
-    const plan = plans[user.subscriptionTier] || plans.free;
+    const subscriptionTier = userData.subscriptionTier || 'free';
+    const plan = plans && plans[subscriptionTier] 
+      ? plans[subscriptionTier] 
+      : { 
+          tier: 'free', 
+          price: 0, 
+          qrCodesLimit: 3, 
+          features: ['Basic QR Generation', 'Standard Colors'] 
+        };
 
     res.json({
       success: true,
       subscription: {
-        tier: user.subscriptionTier || 'free',
-        currentUsage: user.qrCodesGenerated || 0,
+        tier: subscriptionTier,
+        active: userData.subscriptionActive || true,
+        subscribedSince: userData.subscriptionSince || new Date().toISOString(),
+        currentUsage: userData.qrCodesGenerated || 0,
+        remaining: plan.qrCodesLimit - (userData.qrCodesGenerated || 0),
         ...plan
       }
     });
   } catch (error) {
     console.error('Get subscription error:', error);
     res.status(500).json({ error: 'Error fetching subscription' });
+  }
+};
+
+// Get subscription limits for user
+exports.getLimits = async (req, res) => {
+  try {
+    const user = req.user;
+    const userData = await db.get(`users/${user.id}`);
+    
+    if (!userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const subscriptionTier = userData.subscriptionTier || 'free';
+    const plans = await db.get('subscriptions');
+    const plan = plans && plans[subscriptionTier] 
+      ? plans[subscriptionTier] 
+      : { qrCodesLimit: 3 };
+
+    res.json({
+      success: true,
+      limits: {
+        qrCodes: {
+          used: userData.qrCodesGenerated || 0,
+          limit: plan.qrCodesLimit || 3,
+          remaining: (plan.qrCodesLimit || 3) - (userData.qrCodesGenerated || 0)
+        },
+        subscriptionTier: subscriptionTier,
+        requiresUpgrade: (userData.qrCodesGenerated || 0) >= (plan.qrCodesLimit || 3)
+      }
+    });
+  } catch (error) {
+    console.error('Get limits error:', error);
+    res.status(500).json({ error: 'Error fetching limits' });
   }
 };

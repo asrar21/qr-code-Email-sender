@@ -6,17 +6,45 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = JSON.parse(localStorage.getItem("user"));
+    setError("");
+    setLoading(true);
 
-    // if (user?.email === email && user?.password === password) {
-    //   localStorage.setItem("isAuth", "true");
-    //   navigate("/dashboard");
-    // } else {
-    //   alert("Invalid credentials");
-    // }
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Save token and user data to localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("isAuth", "true");
+        
+        // Navigate to dashboard
+        navigate("/dashboard");
+      } else {
+        setError(data.error || data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,6 +53,19 @@ export default function Login() {
         <h2>Welcome Back</h2>
         <p className="subtitle">Login to your dashboard</p>
 
+        {error && (
+          <div style={{
+            backgroundColor: '#fee',
+            color: '#c33',
+            padding: '10px',
+            borderRadius: '5px',
+            marginBottom: '15px',
+            fontSize: '14px'
+          }}>
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleLogin}>
           <input
             type="email"
@@ -32,6 +73,7 @@ export default function Login() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
           />
 
           <input
@@ -40,10 +82,17 @@ export default function Login() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
 
-          <button>Login</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
+
+        <span onClick={() => navigate("/")}>
+          Don't have an account? Sign up
+        </span>
       </div>
     </div>
   );
