@@ -1,0 +1,114 @@
+/* ===== APP CONTAINER ===== */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #04AA6D;
+  color: white;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 25px;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  flex: 1;
+  background: #f7f7f7;
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  padding: 60px 30px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.home-section h1 {
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.home-section p {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.about-section,
+.contact-section,
+.reviews-section {
+  background: white;
+  margin: 20px 0;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.reviews-section .review {
+  margin-bottom: 20px;
+  font-style: italic;
+  background: #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #eeeeee;
+  padding: 15px;
+  text-align: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    margin-top: 10px;
+  }
+
+  .nav-links a {
+    display: block;
+    margin: 5px 0;
+  }
+
+  .section {
+    padding: 40px 20px;
+  }
+
+  .home-section h1 {
+    font-size: 28px;
+  }
+}
