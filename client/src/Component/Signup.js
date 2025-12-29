@@ -15,6 +15,8 @@ export default function Signup() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Country codes for dropdown
   const countryCodes = [
@@ -118,6 +120,14 @@ export default function Signup() {
       ...formData,
       countryCode: e.target.value
     });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const validateForm = () => {
@@ -286,14 +296,22 @@ export default function Signup() {
           {/* Password Field */}
           <div className="form-group">
             <label>Password *</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              className={errors.password ? "error" : ""}
-            />
+            <div className="password-input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                className={errors.password ? "error" : ""}
+              />
+              <span 
+                className="password-toggle-icon"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </span>
+            </div>
             {errors.password && <div className="error-text">{errors.password}</div>}
             <small className="hint">Min 6 chars: 1 uppercase, 1 lowercase, 1 number, 1 special</small>
           </div>
@@ -301,14 +319,22 @@ export default function Signup() {
           {/* Confirm Password Field */}
           <div className="form-group">
             <label>Confirm Password *</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className={errors.confirmPassword ? "error" : ""}
-            />
+            <div className="password-input-group">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className={errors.confirmPassword ? "error" : ""}
+              />
+              <span 
+                className="password-toggle-icon"
+                onClick={toggleConfirmPasswordVisibility}
+              >
+                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+              </span>
+            </div>
             {errors.confirmPassword && <div className="error-text">{errors.confirmPassword}</div>}
           </div>
 

@@ -17,7 +17,7 @@ let colors = [
   { id: 8, color: "#808080", selected: false },
 ];
 
-export default function QrCodeGenerator({ onUpgradeClick }) {
+export default function QrCodeGenerator({ onUpgradeClick,limitCrossed }) {
   const [fieldValues, setFieldValues] = useState({ ...initialValues });
   const [palette, setPalette] = useState([...colors]);
   const [loader, setLoader] = useState(false);
@@ -193,6 +193,10 @@ export default function QrCodeGenerator({ onUpgradeClick }) {
     setPalette(resetPalette);
     setFieldValues({ ...fieldValues, qrColor: "" });
   };
+  const handleUpgradeNow = () =>{
+    onUpgradeClick()
+    limitCrossed()
+  }
 
   return (
     <div className="qr-wrapper">
@@ -217,7 +221,7 @@ export default function QrCodeGenerator({ onUpgradeClick }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
             <span>⚠️ You've used {usage.current}/{usage.limit} free QR codes.</span>
             <button 
-              onClick={onUpgradeClick}  
+              onClick={handleUpgradeNow}  
               style={{
                 background: '#4f46e5',
                 color: 'white',

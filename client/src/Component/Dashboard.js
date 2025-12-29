@@ -10,8 +10,29 @@ import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [limitCrossed,setLimitCrossed] = useState(false)
   const subscriptionSectionRef = useRef(null);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        
+        // Check if user is admin
+        if (userData.role === "admin") {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        navigate("/login");
+        console.error("Invalid user data in localStorage");
+      }
+    }
+  }, [navigate]);
   // Function to scroll to subscription section
   const scrollToSubscription = () => {
     if (subscriptionSectionRef.current) {
@@ -34,34 +55,26 @@ export default function Dashboard() {
   const handleUpgradeClick = () => {
     scrollToSubscription();
   };
+   const handleLimitCrossed = () => {
+    setLimitCrossed(true);
+  };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        navigate("/login");
-        console.error("Invalid user data in localStorage");
-      }
-    }
-  }, [navigate]);
+ 
 
   return (
     <div className="dashboard">
       {/* Pass user to Header */}
       <Header />
-
+ 
       <main className="dashboard-content">
-        <section className="dashboard-section">
+        {isAdmin  ? (
+          <section className="dashboard-section">
+            <h2>📊 QR Analytics (Admin Only)</h2>
+            <QrTracking />
+          </section>
+        ):(<div> <section className="dashboard-section">
           {/* Pass handleUpgradeClick to QR component */}
-          <QrCodeGeneratorComponent onUpgradeClick={handleUpgradeClick} />
-        </section>
-
-        <section className="dashboard-section">
-          <h2>Your QR Analytics</h2>
-          <QrTracking />
+          <QrCodeGeneratorComponent onUpgradeClick={handleUpgradeClick} limitCrossed={handleLimitCrossed} />
         </section>
 
         {/* Add ref to subscription section */}
@@ -73,8 +86,9 @@ export default function Dashboard() {
           }}
         >
           <h2>Upgrade Your Plan</h2>
-          <Subscription />
-        </section>
+          <Subscription limitCrossed = {limitCrossed}/>
+        </section></div>)}
+       
       </main>
 
       <Footer />

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 
-export default function Subscription() {
+export default function Subscription({limitCrossed}) {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState('free');
   const [upgrading, setUpgrading] = useState(null);
 
   useEffect(() => {
-    fetchPlans();
-    fetchCurrentSubscription();
+      fetchCurrentSubscription();
   }, []);
+   useEffect(() => {
+      fetchPlans()
+  }, [currentPlan]);
 
   const fetchPlans = async () => {
     try {
@@ -59,7 +61,7 @@ export default function Subscription() {
   };
 
   const handleSubscribe = async (planId) => {
-    if (currentPlan === planId) return;
+   
     
     setUpgrading(planId);
     
@@ -146,7 +148,7 @@ export default function Subscription() {
               MOST POPULAR
             </div>
           )}
-          
+         
           <h3>{plan.tier}</h3>
           <p className="price">₹{plan.price}<span style={{ fontSize: '14px', color: '#6b7280' }}>/mo</span></p>
           <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px' }}>
@@ -159,7 +161,10 @@ export default function Subscription() {
             ))}
           </ul>
           
+          
+          
           {currentPlan === plan.id ? (
+            <div>
             <button 
               style={{ 
                 background: '#10b981',
@@ -169,10 +174,23 @@ export default function Subscription() {
             >
               Current Plan
             </button>
-          ) : (
+            {limitCrossed && plan.tier !== 'free' && (<div>
+               <button 
+               onClick={() => handleSubscribe(plan.id)}
+              style={{
+                opacity: upgrading === plan.id ? 0.6 : 1,
+                cursor: upgrading === plan.id ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {upgrading === plan.id ? 'Processing...' : 'Upgrade again'}
+            </button>
+            </div>)}
+            
+            </div>
+          ) :  (
             <button 
               onClick={() => handleSubscribe(plan.id)}
-              disabled={upgrading === plan.id}
+              disabled={upgrading === plan.id || plan.tier === 'free' }
               style={{
                 opacity: upgrading === plan.id ? 0.6 : 1,
                 cursor: upgrading === plan.id ? 'not-allowed' : 'pointer'

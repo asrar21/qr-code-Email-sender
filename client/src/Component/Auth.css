@@ -244,3 +244,38 @@
 .auth-link strong {
   color: #667eea;
 }
+
+/* Add these styles to your existing Auth.css file */
+
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group input {
+  width: 100%;
+  padding-right: 40px; /* Make space for the eye icon */
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 1.2em;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.password-toggle-icon:hover {
+  color: #333;
+}

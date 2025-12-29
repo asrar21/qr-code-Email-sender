@@ -21,4 +21,6 @@ router.get('/download/:qrId', downloadQR);
 // Get remaining QR codes
 router.get('/remaining', getRemainingQRs);
 
+
+
 module.exports = router;

@@ -106,11 +106,14 @@ app.use(express.urlencoded({ extended: true }));
 const authRoutes = require('./src/routes/auth');
 const subscriptionRoutes = require('./src/routes/subscription');
 const qrRoutes = require('./src/routes/qr');
+const adminRoutes = require('./src/routes/admin');
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/qr', qrRoutes);
+app.use('/api/admin', adminRoutes);
+
 
 // Basic route
 app.get('/', (req, res) => {

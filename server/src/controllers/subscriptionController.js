@@ -18,18 +18,18 @@ exports.getPlans = async (req, res) => {
         },
         basic: {
           tier: 'basic',
-          price: 9.99,
-          qrCodesLimit: 50,
-          features: ['Custom Colors', 'Basic Analytics', 'Email Delivery'],
+          price: 299,
+          qrCodesLimit: 10,
+          features: ['Custom Colors', 'Basic Analytics',],
           description: 'For growing businesses'
         },
-        premium: {
-          tier: 'premium',
-          price: 19.99,
-          qrCodesLimit: 200,
-          features: ['All Basic Features', 'Priority Support', 'API Access', 'Custom Branding'],
-          description: 'For professionals & agencies'
-        }
+        // premium: {
+        //   tier: 'premium',
+        //   price: 19.99,
+        //   qrCodesLimit: 200,
+        //   features: ['All Basic Features', 'Priority Support', 'API Access', 'Custom Branding'],
+        //   description: 'For professionals & agencies'
+        // }
       };
       
       await db.set('subscriptions', defaultPlans);
