@@ -40,7 +40,7 @@ export default function QrCodeGenerator({ onUpgradeClick,limitCrossed }) {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:5000/api/qr/remaining", {
+      const res = await fetch("https://qr-code-backend-jy1x.vercel.app/api/qr/remaining", {
         headers: { 
           "Authorization": `Bearer ${token}`
         }
@@ -114,7 +114,7 @@ export default function QrCodeGenerator({ onUpgradeClick,limitCrossed }) {
         return;
       }
 
-      let res = await fetch("http://localhost:5000/api/qr/generate", {
+      let res = await fetch("https://qr-code-backend-jy1x.vercel.app/api/qr/generate", {
         method: "POST",
         body: JSON.stringify({
           qrText: fieldValues.qrText,
@@ -168,7 +168,7 @@ export default function QrCodeGenerator({ onUpgradeClick,limitCrossed }) {
     
     // Update download count in backend
     if (qrId) {
-      fetch(`http://localhost:5000/api/qr/download/${qrId}`, {
+      fetch(`https://qr-code-backend-jy1x.vercel.app/api/qr/download/${qrId}`, {
         method: "GET",
         headers: { 
           "Authorization": `Bearer ${localStorage.getItem("token")}`

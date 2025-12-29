@@ -19,7 +19,7 @@ export default function Subscription({limitCrossed}) {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:5000/api/subscriptions/plans", {
+      const res = await fetch("https://qr-code-backend-jy1x.vercel.app/api/subscriptions/plans", {
         headers: { 
           "Authorization": `Bearer ${token}`
         }
@@ -43,7 +43,7 @@ export default function Subscription({limitCrossed}) {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:5000/api/subscriptions/my-subscription", {
+      const res = await fetch("https://qr-code-backend-jy1x.vercel.app/api/subscriptions/my-subscription", {
         headers: { 
           "Authorization": `Bearer ${token}`
         }
@@ -69,7 +69,7 @@ export default function Subscription({limitCrossed}) {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:5000/api/subscriptions/subscribe", {
+      const res = await fetch("https://qr-code-backend-jy1x.vercel.app/api/subscriptions/subscribe", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

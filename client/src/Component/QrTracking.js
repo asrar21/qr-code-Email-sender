@@ -38,7 +38,7 @@ export default function QrTracking() {
   const fetchQrCodes = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/admin/qr-codes", {
+      const response = await fetch("https://qr-code-backend-jy1x.vercel.app/api/admin/qr-codes", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -62,7 +62,7 @@ export default function QrTracking() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/admin/stats", {
+      const response = await fetch("https://qr-code-backend-jy1x.vercel.app/api/admin/stats", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -82,7 +82,7 @@ export default function QrTracking() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/admin/users", {
+      const response = await fetch("https://qr-code-backend-jy1x.vercel.app/api/admin/users", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -106,7 +106,7 @@ export default function QrTracking() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5000/api/admin/qr-codes/${qrId}`, {
+      const response = await fetch(`https://qr-code-backend-jy1x.vercel.app/api/admin/qr-codes/${qrId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`

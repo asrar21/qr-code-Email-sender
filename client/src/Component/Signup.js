@@ -163,7 +163,7 @@ export default function Signup() {
       //     mobileNumber: mobileNumber,
       //     password: formData.password
       //   }))
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch("https://qr-code-backend-jy1x.vercel.app/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
