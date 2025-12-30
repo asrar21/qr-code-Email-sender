@@ -3,7 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Subscription from "./Subscription";
 import QrTracking from "./QrTracking";
-import QrCodeGeneratorComponent from "./qrCodeGeneratorComponent";
+import QrCodeGenerator from "./qrCodeGenerator";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 
@@ -74,7 +74,7 @@ export default function Dashboard() {
           </section>
         ):(<div> <section className="dashboard-section">
           {/* Pass handleUpgradeClick to QR component */}
-          <QrCodeGeneratorComponent onUpgradeClick={handleUpgradeClick} limitCrossed={handleLimitCrossed} />
+          <QrCodeGenerator onUpgradeClick={handleUpgradeClick} limitCrossed={handleLimitCrossed} />
         </section>
 
         {/* Add ref to subscription section */}
