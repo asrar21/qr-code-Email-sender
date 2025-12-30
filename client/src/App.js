@@ -1,5 +1,4 @@
 import React from 'react';
-import QrCodeGenerator from './Component/qrCodeGeneratorComponent'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Signup from "./Component/Signup";
 import Login from "./Component/Login";
